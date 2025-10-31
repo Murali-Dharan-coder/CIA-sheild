@@ -1,5 +1,0 @@
-- [x] Create confidentiality_check.py with check_confidentiality function
-- [x] Create integrity_check.py with check_integrity function
-- [x] Create availability_check.py with check_availability function
-- [x] Modify backend/app.py to import and use these functions instead of random scores
-- [x] Test the updated app (imports successful)
