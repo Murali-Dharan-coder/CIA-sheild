@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIAShield - Web Security Analyzer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+</head>
+<body>
+  <div class="navbar">CIAShield - Web Security Analyzer</div>
+
+  <div class="main-content">
+    <h2>🔐 Welcome to CIAShield</h2>
+    <p>Paste your website link below and choose whether to test <b>individual CIA</b> or the <b>whole analysis</b>.</p>
+
+    <div class="input-box">
+      <input type="text" id="urlInput" placeholder="Enter website URL here...">
+    </div>
+
+    <div class="card-container">
+      <div class="card" onclick="runAnalysis('confidentiality')">
+        <h3>🔒 Confidentiality</h3>
+        <p>Check for data privacy issues.</p>
+      </div>
+      <div class="card" onclick="runAnalysis('integrity')">
+        <h3>🛡 Integrity</h3>
+        <p>Check for data tampering risks.</p>
+      </div>
+      <div class="card" onclick="runAnalysis('availability')">
+        <h3>⚡ Availability</h3>
+        <p>Check for uptime and DoS risks.</p>
+      </div>
+      <div class="card" onclick="runAnalysis('all')">
+        <h3>🌐 Full CIA</h3>
+        <p>Run complete CIA analysis.</p>
+      </div>
+    </div>
+
+    <div id="results" class="results-box" style="display:none;"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

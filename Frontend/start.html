@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIAShield</title>
+  <style>
+    body { font-family: sans-serif; background:#0f172a; color:#f8fafc; margin:0; text-align:center; }
+    .navbar { background:#1e293b; padding:15px; font-weight:bold; }
+    input { width:60%; padding:10px; border-radius:8px; border:none; background:#1e293b; color:#fff; margin:15px 0; }
+    .cards { display:flex; flex-wrap:wrap; justify-content:center; gap:15px; }
+    .card { background:#1e293b; padding:15px; border-radius:10px; width:200px; cursor:pointer; transition:0.3s; }
+    .card:hover { background:#334155; transform:scale(1.05); }
+    .results { background:#1e293b; margin:20px auto; padding:20px; border-radius:10px; width:80%; display:none; text-align:left; }
+    .cia { background:#0f172a; padding:15px; border-radius:10px; margin:10px 0; }
+    .progress { background:#334155; border-radius:10px; height:8px; margin:5px 0; }
+    .bar { background:#38bdf8; height:100%; }
+    .error { color:#f87171; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <div class="navbar">CIAShield - Web Security Analyzer</div>
+  <h2>🔐 Welcome to CIAShield</h2>
+  <p>Enter website and choose what to test 👇</p>
+
+  <input id="url" placeholder="Enter website URL...">
+
+  <div class="cards">
+    <div class="card" onclick="analyze('confidentiality')">🔒 Confidentiality</div>
+    <div class="card" onclick="analyze('integrity')">🛡 Integrity</div>
+    <div class="card" onclick="analyze('availability')">⚡ Availability</div>
+    <div class="card" onclick="analyze('all')">🌐 Full CIA</div>
+  </div>
+
+  <div id="result" class="results"></div>
+
+  <script>
+    async function analyze(type) {
+      const url = document.getElementById("url").value.trim();
+      const box = document.getElementById("result");
+      box.style.display = "block";
+
+      if (!url) return box.innerHTML = '<p class="error">Please enter URL.</p>';
+      try { new URL(url); } catch { return box.innerHTML = '<p class="error">Invalid URL.</p>'; }
+
+      const testType = type === "all" ? "cia" : type;
+
+      try {
+        const res = await fetch("http://localhost:5000/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, test_type: testType })
+        });
+        const data = await res.json();
+        if (data.error) return box.innerHTML = `<p class="error">${data.error}</p>`;
+
+        let html = "";
+        const makeSection = (key, val, icon) => `
+          <div class="cia">
+            <h4>${icon} ${key}</h4>
+            <div class="progress"><div class="bar" style="width:${val.score}%;"></div></div>
+            <p><b>${val.score}</b>/100 - ${val.one_line}</p>
+            <p>${val.explanation}</p>
+            <p><b>Tip:</b> ${val.suggestion}</p>
+          </div>`;
+
+        if (data.details) {
+          html = makeSection("Confidentiality", data.details.confidentiality, "🔒") +
+                 makeSection("Integrity", data.details.integrity, "🛡") +
+                 makeSection("Availability", data.details.availability, "⚡");
+        } else {
+          html = makeSection(type, data, type === "confidentiality" ? "🔒" : type === "integrity" ? "🛡" : "⚡");
+        }
+        box.innerHTML = html;
+      } catch {
+        box.innerHTML = '<p class="error">Server connection failed.</p>';
+      }
+    }
+  </script>
+</body>
+</html>
